@@ -5,22 +5,36 @@ const geocodingAPI = 'https://api.openweathermap.org/geo/1.0/direct?q=';
 const cityName = 'Dover';
 const stateCode = 'NH';
 const countryCode = 'US';
+const geocodingData = geocodingAPI + cityName + ',' + stateCode + ',' + countryCode + '&appid=' + API_KEY;
 
 const getLatLon = () => {
-    fetch(geocodingAPI + cityName + ',' + stateCode + ',' + countryCode + '&appid=' + API_KEY)
+    fetch(geocodingData)
     .then(function(response) {
         response.json()
         .then(data => {
+            const lat = data[0].lat;
+            const lon = data[0].lon;
+            getWeatherApi(lat, lon);
+
             console.log(data[0].lat);
             console.log(data[0].lon);
+        }).catch(function(error) {
+            console.log('Geocoding Response Error', error);
         });
     }).catch(function(error) {
-        console.log('Fetch Error', error);
+        console.log('Geocoding Fetch Error', error);
     });
 }
 
-getLatLon();
 
-const getWeatherApi = () => {
-    fetch(onecallAPI + 'lat=' + lat + '&lon' + lon + '&appid=' + API_KEY);
+const getWeatherApi = (lat, lon) => {
+    fetch(onecallAPI + 'lat=' + lat + '&lon=' + lon + '&appid=' + API_KEY)
+    .then(response => response.json())
+    .then(weatherData => {
+        console.log(weatherData);
+    }).catch(error => {
+        console.log('Weather API Fetch Error', error);
+    })
 }
+
+getLatLon();
